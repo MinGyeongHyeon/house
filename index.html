@@ -112,6 +112,31 @@ nav{background:rgba(255,255,255,.9);backdrop-filter:blur(12px);border-bottom:1px
 /* Tip */
 .tip{background:var(--accent-light);border:1px solid #BFDBFE;border-radius:var(--radius-sm);padding:12px 16px;font-size:12px;color:var(--accent);margin-top:16px;line-height:1.6}
 
+/* D-day card */
+.dday-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:24px;box-shadow:var(--shadow)}
+.dday-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:8px}
+.dday-title{font-size:15px;font-weight:700}
+.dday-badge{font-size:12px;font-weight:700;font-family:var(--mono);padding:4px 12px;border-radius:99px}
+.dday-badge.urgent{background:#FEF2F2;color:var(--red)}
+.dday-badge.soon{background:var(--orange-light);color:var(--orange)}
+.dday-badge.ok{background:var(--accent-light);color:var(--accent)}
+.dday-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+@media(max-width:540px){.dday-grid{grid-template-columns:repeat(2,1fr)}}
+.dday-unit{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center}
+.dday-num{font-size:28px;font-weight:700;font-family:var(--mono);color:var(--accent);line-height:1}
+.dday-label{font-size:11px;color:var(--muted);margin-top:4px}
+.dday-track{height:10px;background:var(--bg);border-radius:99px;overflow:hidden;margin-bottom:6px;border:1px solid var(--border)}
+.dday-fill{height:100%;border-radius:99px;transition:width 1.4s cubic-bezier(.4,0,.2,1);width:0%;background:linear-gradient(90deg,#1A56DB,#60A5FA)}
+.dday-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-family:var(--mono)}
+
+/* Loan method tabs */
+.method-tabs{display:flex;gap:0;margin-bottom:20px;border:1px solid var(--border2);border-radius:var(--radius-sm);overflow:hidden}
+.method-tab{flex:1;padding:10px;border:none;background:none;font-family:var(--font);font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s;border-right:1px solid var(--border2)}
+.method-tab:last-child{border-right:none}
+.method-tab:hover{background:var(--bg);color:var(--ink)}
+.method-tab.active{background:var(--accent);color:#fff}
+.method-desc{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:var(--ink2);margin-bottom:20px;line-height:1.6}
+
 /* Items page */
 .items-filter{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
 .filter-btn{padding:6px 14px;border-radius:99px;border:1px solid var(--border2);font-size:12px;font-weight:500;font-family:var(--font);cursor:pointer;background:var(--surface);color:var(--ink2);transition:all .15s}
@@ -235,6 +260,22 @@ nav{background:rgba(255,255,255,.9);backdrop-filter:blur(12px);border-bottom:1px
     </div>
   </div>
 
+  <!-- D-day -->
+  <div class="dday-card">
+    <div class="dday-top">
+      <div class="dday-title">🏠 잔금일 &amp; 이사일까지</div>
+      <div class="dday-badge" id="dday-badge">계산 중...</div>
+    </div>
+    <div class="dday-grid">
+      <div class="dday-unit"><div class="dday-num" id="dd-days">—</div><div class="dday-label">일</div></div>
+      <div class="dday-unit"><div class="dday-num" id="dd-hours">—</div><div class="dday-label">시간</div></div>
+      <div class="dday-unit"><div class="dday-num" id="dd-mins">—</div><div class="dday-label">분</div></div>
+      <div class="dday-unit"><div class="dday-num" id="dd-secs">—</div><div class="dday-label">초</div></div>
+    </div>
+    <div class="dday-track"><div class="dday-fill" id="dday-bar"></div></div>
+    <div class="dday-meta"><span id="dday-start">계약일</span><span>🎯 2025년 6월 22일 잔금·이사일</span></div>
+  </div>
+
   <!-- 가전 -->
   <div class="sec-header"><div class="sec-dot blue"></div><div class="sec-title">가전</div><div class="sec-line"></div></div>
   <div class="card">
@@ -321,8 +362,19 @@ nav{background:rgba(255,255,255,.9);backdrop-filter:blur(12px);border-bottom:1px
     <div class="hero-sub">원리금균등 방식 기준 · 수치를 바꿔 계산해보세요</div>
   </div>
   <div class="calc-card">
-    <div class="calc-title">대출 조건 입력</div>
-    <div class="calc-sub">기본값은 실제 입력하신 조건으로 세팅되어 있어요.</div>
+    <div class="calc-title">대출 상환 방식 선택</div>
+    <div class="calc-sub">3가지 방식을 비교해보세요. 기본값은 실제 대출 조건으로 세팅되어 있어요.</div>
+
+    <!-- Method Tabs -->
+    <div class="method-tabs">
+      <button class="method-tab active" onclick="setMethod('equal-principal',this)">원금균등</button>
+      <button class="method-tab" onclick="setMethod('equal-payment',this)">원리금균등</button>
+      <button class="method-tab" onclick="setMethod('graduated',this)">체증식</button>
+    </div>
+    <div class="method-desc" id="method-desc">
+      📌 <strong>원금균등</strong> — 매달 원금을 동일하게 상환. 초기 부담이 크지만 총 이자가 가장 적어요.
+    </div>
+
     <div class="form-grid">
       <div class="form-group">
         <label class="form-label">대출금액 (원)</label>
@@ -344,13 +396,18 @@ nav{background:rgba(255,255,255,.9);backdrop-filter:blur(12px);border-bottom:1px
         <input class="form-input" id="gracePeriod" type="number" value="0" step="1" min="0"/>
         <div class="form-hint">이자만 내는 기간 (없으면 0)</div>
       </div>
+      <div class="form-group" id="grad-rate-group" style="display:none">
+        <label class="form-label">체증률 (%/년)</label>
+        <input class="form-input" id="gradRate" type="number" value="3.0" step="0.5" min="0.1" max="20"/>
+        <div class="form-hint">매년 상환금 증가율 (예: 3%)</div>
+      </div>
     </div>
-    <button class="calc-btn" onclick="calcLoan()">📊 월 상환금 계산하기</button>
+    <button class="calc-btn" onclick="calcLoan()">📊 상환금 계산하기</button>
 
     <div id="loan-result" style="display:none">
       <div class="result-grid">
         <div class="result-tile">
-          <div class="result-label">월 상환금 (원리금균등)</div>
+          <div class="result-label" id="r-monthly-label">초기 월 상환금</div>
           <div class="result-val accent" id="r-monthly">—</div>
         </div>
         <div class="result-tile">
@@ -380,7 +437,7 @@ nav{background:rgba(255,255,255,.9);backdrop-filter:blur(12px);border-bottom:1px
           <tbody id="amort-body"></tbody>
         </table>
       </div>
-      <div class="tip">💡 원리금균등 방식 기준입니다. 실제 대출 조건(거치 후 원리금균등, 체증식 등)에 따라 다를 수 있으니 은행에서 정확한 조건을 확인하세요.</div>
+      <div class="tip" id="loan-tip">💡 실제 대출 조건에 따라 달라질 수 있으니 은행에서 정확한 조건을 확인하세요.</div>
     </div>
   </div>
 </div>
@@ -392,7 +449,7 @@ const ITEMS = [
   {cat:'가전', name:'삼성 냉장고',         model:'RM80F91H1X',      paid:null,       status:'paid',   note:'가전 3종 합산 결제'},
   {cat:'가전', name:'삼성 콤보 세탁기',    model:'WD90H25AHS',      paid:null,       status:'paid',   note:'가전 3종 합산 결제'},
   {cat:'가전', name:'삼성 TV',              model:'KQ85QNF90BFXKR', paid:null,       status:'paid',   note:'가전 3종 합산 결제'},
-  {cat:'가전', name:'삼성 가전 3종 소계',  model:'캐시백 -2,964,230원 적용',  paid:11194620,  status:'paid',   note:'정가 14,230,000원'},
+  {cat:'가전', name:'삼성 가전 3종 소계',  model:'캐시백 -2,964,230원 적용', paid:11194620, status:'paid', note:'정가 14,230,000원'},
   {cat:'가구', name:'엠디바노 700 소파',   model:'—',               paid:1650000,    status:'paid',   note:''},
   {cat:'부동산', name:'신원프린스 매매가', model:'—',               paid:435000000,  status:'total',  note:'총 매매가'},
   {cat:'부동산', name:'계약금',             model:'—',               paid:21750000,   status:'paid',   note:'납부 완료'},
@@ -400,6 +457,7 @@ const ITEMS = [
   {cat:'부동산', name:'잔금',               model:'매매가−계약금−대출', paid:133250000, status:'future', note:'앞으로 납부 예정'},
 ];
 
+// ── Navigation ──
 function goPage(id, btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
@@ -408,6 +466,7 @@ function goPage(id, btn){
   if(id==='items') renderItems('all');
 }
 
+// ── Items ──
 function renderItems(filter){
   const list = document.getElementById('items-list');
   const filtered = ITEMS.filter(it=>{
@@ -435,55 +494,212 @@ function renderItems(filter){
     </div>`;
   }).join('');
 }
-
 function filterItems(filter, btn){
   document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   renderItems(filter);
 }
 
+// ── D-Day Countdown ──
+const TARGET = new Date('2026-06-22T00:00:00');
+// 계약일 기준점 (계약금 납부 시점 추정)
+const START = new Date('2026-04-04T00:00:00');
+
+function updateDday(){
+  const now = new Date();
+ 
+  const diff = TARGET - now;
+  const totalSpan = TARGET - START;
+  const elapsed = now - START;
+  const pct = Math.min(100, Math.max(0, (elapsed/totalSpan)*100));
+
+  const badge = document.getElementById('dday-badge');
+
+  if(diff <= 0){
+    document.getElementById('dd-days').textContent = '0';
+    document.getElementById('dd-hours').textContent = '0';
+    document.getElementById('dd-mins').textContent = '0';
+    document.getElementById('dd-secs').textContent = '0';
+    badge.textContent = '🎉 이사일 도착!';
+    badge.className = 'dday-badge ok';
+    document.getElementById('dday-bar').style.width = '100%';
+    return;
+  }
+
+  const days  = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  const mins  = Math.floor((diff % 3600000) / 60000);
+  const secs  = Math.floor((diff % 60000) / 1000);
+
+  document.getElementById('dd-days').textContent  = days;
+  document.getElementById('dd-hours').textContent = String(hours).padStart(2,'0');
+  document.getElementById('dd-mins').textContent  = String(mins).padStart(2,'0');
+  document.getElementById('dd-secs').textContent  = String(secs).padStart(2,'0');
+
+  if(days <= 7){
+    badge.textContent = `D-${days} 🔥 거의 다 왔어요!`;
+    badge.className = 'dday-badge urgent';
+  } else if(days <= 30){
+    badge.textContent = `D-${days} ⚡ 막바지 준비!`;
+    badge.className = 'dday-badge soon';
+  } else {
+    badge.textContent = `D-${days}`;
+    badge.className = 'dday-badge ok';
+  }
+
+  document.getElementById('dday-bar').style.width = pct.toFixed(1)+'%';
+  document.getElementById('dday-start').textContent =
+    `시작 ${START.getFullYear()}.${START.getMonth()+1}.${START.getDate()} (${pct.toFixed(0)}% 경과)`;
+}
+
+// ── Loan Calculator ──
+let currentMethod = 'equal-principal';
+
+const METHOD_INFO = {
+  'equal-principal': {
+    label: '원금균등',
+    mlabel: '1회차 월 상환금',
+    desc: '📌 <strong>원금균등</strong> — 매달 원금을 동일하게 상환. 초기 부담이 크지만 총 이자가 가장 적어요.',
+    tip: '💡 원금균등은 매월 원금이 동일하고 이자는 줄어들어, 초반엔 부담이 크고 후반엔 가벼워져요.',
+  },
+  'equal-payment': {
+    label: '원리금균등',
+    mlabel: '월 상환금 (고정)',
+    desc: '📌 <strong>원리금균등</strong> — 매달 동일한 금액 상환. 예측 가능한 지출로 가계 계획이 편해요.',
+    tip: '💡 원리금균등은 매월 동일한 금액을 내는 방식이라 생활비 계획 짜기가 가장 편해요.',
+  },
+  'graduated': {
+    label: '체증식',
+    mlabel: '초기 월 상환금',
+    desc: '📌 <strong>체증식 (점증식)</strong> — 초기엔 적게 내고 매년 일정 비율로 늘어남. 소득 증가가 예상될 때 유리해요.',
+    tip: '💡 체증식은 초기 부담이 적지만 총 이자가 가장 많아요. 소득이 늘어날 것을 예상할 때 선택해요.',
+  },
+};
+
+function setMethod(method, btn){
+  currentMethod = method;
+  document.querySelectorAll('.method-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('method-desc').innerHTML = METHOD_INFO[method].desc;
+  document.getElementById('grad-rate-group').style.display = method==='graduated' ? '' : 'none';
+  document.getElementById('loan-result').style.display = 'none';
+}
+
 function calcLoan(){
   const P = parseFloat(document.getElementById('loanAmt').value)||0;
-  const r = (parseFloat(document.getElementById('loanRate').value)||0)/100/12;
+  const annualRate = parseFloat(document.getElementById('loanRate').value)||0;
+  const r = annualRate/100/12;
   const totalMonths = (parseInt(document.getElementById('loanYears').value)||0)*12;
   const graceMonths = (parseInt(document.getElementById('gracePeriod').value)||0)*12;
   const repayMonths = totalMonths - graceMonths;
-  const monthly = r===0 ? P/repayMonths : P*r*Math.pow(1+r,repayMonths)/(Math.pow(1+r,repayMonths)-1);
-  const graceInt = P*r*graceMonths;
-  const totalPaid = monthly*repayMonths + graceInt;
-  const totalInt = totalPaid - P;
+  const info = METHOD_INFO[currentMethod];
 
-  document.getElementById('r-monthly').textContent = Math.round(monthly).toLocaleString('ko-KR')+'원';
-  document.getElementById('r-total').textContent = Math.round(totalPaid).toLocaleString('ko-KR')+'원';
-  document.getElementById('r-interest').textContent = Math.round(totalInt).toLocaleString('ko-KR')+'원';
-
-  let balance = P, rows = '';
+  let rows = '', totalPaid = 0, balance = P;
   const show = Math.min(24, totalMonths);
-  for(let m=1;m<=show;m++){
-    const interest = balance*r;
-    const isGrace = m<=graceMonths;
-    const principal = isGrace ? 0 : monthly-interest;
-    const payment = isGrace ? interest : monthly;
-    balance = Math.max(0, balance-principal);
-    rows += `<tr>
-      <td>${m}회차</td>
-      <td class="right">${Math.round(payment).toLocaleString()}</td>
-      <td class="right">${Math.round(principal).toLocaleString()}</td>
-      <td class="right">${Math.round(interest).toLocaleString()}</td>
-      <td class="right">${Math.round(balance).toLocaleString()}</td>
-    </tr>`;
+
+  if(currentMethod === 'equal-payment'){
+    // 원리금균등
+    const monthly = r===0 ? P/repayMonths : P*r*Math.pow(1+r,repayMonths)/(Math.pow(1+r,repayMonths)-1);
+    const graceInt = P*r*graceMonths;
+    totalPaid = monthly*repayMonths + graceInt;
+
+    for(let m=1;m<=show;m++){
+      const interest = balance*r;
+      const isGrace = m<=graceMonths;
+      const principal = isGrace ? 0 : monthly-interest;
+      const payment = isGrace ? interest : monthly;
+      balance = Math.max(0, balance-principal);
+      totalPaid += isGrace ? interest : 0;
+      rows += `<tr><td>${m}회차</td><td class="right">${fmt(payment)}</td><td class="right">${fmt(principal)}</td><td class="right">${fmt(interest)}</td><td class="right">${fmt(balance)}</td></tr>`;
+    }
+    totalPaid = monthly*repayMonths + P*r*graceMonths;
+    document.getElementById('r-monthly').textContent = fmt(monthly)+'원';
+
+  } else if(currentMethod === 'equal-principal'){
+    // 원금균등
+    const principalPerMonth = P / repayMonths;
+    let firstPayment = 0;
+    totalPaid = 0; balance = P;
+
+    for(let m=1;m<=totalMonths;m++){
+      const interest = balance*r;
+      const isGrace = m<=graceMonths;
+      const principal = isGrace ? 0 : principalPerMonth;
+      const payment = principal + interest;
+      if(m===1) firstPayment = payment;
+      totalPaid += payment;
+      if(m<=show){
+        balance = Math.max(0, balance-principal);
+        rows += `<tr><td>${m}회차</td><td class="right">${fmt(payment)}</td><td class="right">${fmt(principal)}</td><td class="right">${fmt(interest)}</td><td class="right">${fmt(balance)}</td></tr>`;
+      } else {
+        balance = Math.max(0, balance-principal);
+      }
+    }
+    document.getElementById('r-monthly').textContent = fmt(firstPayment)+'원';
+
+  } else {
+    // 체증식 (점증식)
+    const gradAnnual = (parseFloat(document.getElementById('gradRate').value)||3)/100;
+    // 초기 월 상환금 계산: 현재가치 합산으로 역산
+    // 매년 g씩 증가, 월 r 이자
+    // PMT1 = P * r / sum_{k=0}^{n-1}( (1+g)^k / (1+r)^{12k+12+...} ) — 근사: binary search
+    let lo=1, hi=P*r*5, pmt1=P/repayMonths;
+    for(let iter=0;iter<60;iter++){
+      pmt1=(lo+hi)/2;
+      let pv=0;
+      for(let yr=0;yr<(repayMonths/12);yr++){
+        const monthlyYr = pmt1*Math.pow(1+gradAnnual,yr);
+        for(let mo=0;mo<12;mo++){
+          const mIdx = yr*12+mo+1;
+          pv += monthlyYr/Math.pow(1+r,mIdx);
+        }
+      }
+      if(pv>P) hi=pmt1; else lo=pmt1;
+    }
+
+    balance=P; totalPaid=0;
+    let firstPmt = pmt1*(graceMonths>0?0:1);
+    if(graceMonths>0) firstPmt = balance*r;
+
+    for(let m=1;m<=totalMonths;m++){
+      const yr = Math.floor((m-graceMonths-1)/12);
+      const isGrace = m<=graceMonths;
+      const interest = balance*r;
+      const monthlyPmt = isGrace ? interest : pmt1*Math.pow(1+gradAnnual, Math.max(0,yr));
+      const principal = isGrace ? 0 : monthlyPmt - interest;
+      totalPaid += monthlyPmt;
+      if(m<=show){
+        balance = Math.max(0, balance-principal);
+        rows += `<tr><td>${m}회차</td><td class="right">${fmt(monthlyPmt)}</td><td class="right">${fmt(principal)}</td><td class="right">${fmt(interest)}</td><td class="right">${fmt(balance)}</td></tr>`;
+      } else {
+        balance = Math.max(0, balance-principal);
+      }
+    }
+    document.getElementById('r-monthly').textContent = fmt(graceMonths>0?P*r:pmt1)+'원';
   }
+
+  const totalInt = totalPaid - P;
+  document.getElementById('r-monthly-label').textContent = info.mlabel;
+  document.getElementById('r-total').textContent = fmt(totalPaid)+'원';
+  document.getElementById('r-interest').textContent = fmt(totalInt)+'원';
   document.getElementById('amort-body').innerHTML = rows;
+  document.getElementById('loan-tip').innerHTML = info.tip;
   document.getElementById('loan-result').style.display = 'block';
 }
 
-// Animate progress bars
+function fmt(n){ return Math.round(n).toLocaleString('ko-KR'); }
+
+// ── Init ──
 window.addEventListener('load',()=>{
+  // Progress bars
   setTimeout(()=>{
     document.getElementById('bar1').style.width='5.0%';
     document.getElementById('bar2').style.width='64.4%';
     document.getElementById('bar3').style.width='7.7%';
   },400);
+  // D-day
+  updateDday();
+  setInterval(updateDday, 1000);
 });
 </script>
 </body>
